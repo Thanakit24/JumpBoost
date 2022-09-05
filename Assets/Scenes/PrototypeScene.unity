@@ -537,6 +537,7 @@ GameObject:
   - component: {fileID: 39153070}
   - component: {fileID: 39153071}
   - component: {fileID: 39153072}
+  - component: {fileID: 39153073}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -610,6 +611,23 @@ MonoBehaviour:
   groundDistance: 1
   groundDrag: 2.2
   groundCheck: {fileID: 229547556}
+--- !u!114 &39153073
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 39153069}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0187532b176ad5b4cbf1caaca793d836, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blurMat: {fileID: 2100000, guid: 8500ddebd653ce34990358227806f56c, type: 2}
+  minVel: 3
+  maxVel: 10
+  maxBlur: 0.1
+  rb: {fileID: 39153071}
 --- !u!1 &45376907
 GameObject:
   m_ObjectHideFlags: 0
@@ -1197,10 +1215,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0187532b176ad5b4cbf1caaca793d836, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rendererData: {fileID: 11400000, guid: 4e066831ca146da48a53bf5552df8197, type: 2}
-  featureName: Feature
-  transitionLength: 0.5
-  maxDelta: 0.15
+  blurMat: {fileID: 0}
+  minVel: 0
+  maxVel: 0
+  maxBlur: 0
+  rb: {fileID: 0}
 --- !u!1 &229339369
 GameObject:
   m_ObjectHideFlags: 0

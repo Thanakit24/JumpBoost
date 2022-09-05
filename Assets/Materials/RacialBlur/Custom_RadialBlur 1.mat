@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Custom_RadialBlur
-  m_Shader: {fileID: 4800000, guid: 1e0654b5231edea4eb005719401943bc, type: 3}
+  m_Name: Custom_RadialBlur 1
+  m_Shader: {fileID: 4800000, guid: 2499dba7d5e575543929a24ffbd4b9fa, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -20,14 +20,12 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: f937858a51e5cd24aa5b026af31d0fe1, type: 3}
-        m_Scale: {x: 0.11, y: 1}
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    m_Ints: []
     m_Floats:
-    - blurWidth: 0.14723618
-    - numSamples: 42.26
+    - blurWidth: 0
+    - numSamples: 10
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - center: {r: 0.05, g: 0.47, b: 0, a: 0}
+    - center: {r: 0.5, g: 0.5, b: 0, a: 0}
   m_BuildTextureStacks: []
