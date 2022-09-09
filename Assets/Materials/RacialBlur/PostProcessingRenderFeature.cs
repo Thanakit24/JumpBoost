@@ -21,7 +21,7 @@ public class PostProcessingRenderFeature : ScriptableRendererFeature
 
     public override void Create()
     {
-        Debug.Log($"printing name of shader{name}");
+        //Debug.Log($"printing name of shader{name}");
         renderPass = new RenderPass(
             name,
             settings.material,

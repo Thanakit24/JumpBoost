@@ -9,9 +9,7 @@ public class BlurEnabler : MonoBehaviour
     //public float maxBlur = 0.15f;
     //public float velScaler = 0.015f;
     public float minVel, maxVel, maxBlur;
-
     public Rigidbody rb;
-
     
     void Update()
     {

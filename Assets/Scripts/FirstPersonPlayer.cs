@@ -10,7 +10,8 @@ public class FirstPersonPlayer : MonoBehaviour
     {
         walking,
         sprinting,
-        air
+        air,
+        fastFall
     }
 
     [Header("Movement")]
@@ -33,6 +34,7 @@ public class FirstPersonPlayer : MonoBehaviour
     public float maxJumpSpeed;
     public float airMultiplier;
     public float fallJumpGravity;
+    public float fastFallSpeed;
 
     private bool hasJumped;
     public Slider jumpChargeBar;
@@ -44,11 +46,13 @@ public class FirstPersonPlayer : MonoBehaviour
     public float groundDistance;
     public float groundDrag;
     public Transform groundCheck;
-    bool isGrounded;
+    [SerializeField] private bool isGrounded;
+    private bool lastGrounded = true;
 
-    //[Header("SlopeHandling")]
-    //public float maxSlopeAngle;
-    //private RaycastHit slopeHit;
+    [Header("SlopeHandling")]
+    public float maxSlopeAngle;
+    private RaycastHit slopeHit;
+    public bool exitingSlope;
 
     void Start()
     {
@@ -63,22 +67,24 @@ public class FirstPersonPlayer : MonoBehaviour
     {
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
         //OnSlope = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-        ProcessInputs();
-        StateHandler();
-        SpeedControl();
-
         if (isGrounded)
         {
-            //print(isGrounded);
-            rb.drag = groundDrag;
-           
+            if (!lastGrounded)
+            {
+                rb.drag = groundDrag;
+                exitingSlope = false;
+            }
         }
         else
         {
-            //print("Not grounded");
             rb.drag = 0;
             JumpFall();
         }
+
+        lastGrounded = isGrounded;
+        ProcessInputs();
+        StateHandler();
+        SpeedControl();
     }
 
     private void FixedUpdate()
@@ -111,7 +117,6 @@ public class FirstPersonPlayer : MonoBehaviour
         if (Input.GetKey(KeyCode.Space) && isGrounded)
         {
             //print("detect jump input"); 
-            // charge bar
             jumpChargeBar.value += increaseAmount * increasePercentage * Time.deltaTime;
             currentJumpForce += increaseAmount * increasePercentage * Time.deltaTime;
         }
@@ -125,46 +130,72 @@ public class FirstPersonPlayer : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.Space) && isGrounded)
         {
             Jump();
+          
             currentJumpForce = defaultJumpForce;
             jumpChargeBar.value = 0;
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftControl) && state == MovementStates.air)
+        {
+            state = MovementStates.fastFall;
+            print("checks H input");
+            FastFall();
         }
     }
     private void Move()
     {
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput; //use this for jump dir
-        //if (OnSlope())
-        //{
-        //    rb.AddForce(SlopeMoveDirection() * moveSpeed * 20f, ForceMode.Force);
-        //}
-        if (isGrounded)
+
+        if (OnSlope() && !exitingSlope) //when moving on slope and not exiting slope
+        {
+            //print("currently on slope");
+            rb.AddForce(SlopeMoveDirection() * moveSpeed * 15f, ForceMode.Force);
+            if (rb.velocity.y > 0)
+            {
+                rb.AddForce(Vector3.down * 80f, ForceMode.Force);
+            }
+        }
+        else if (isGrounded) //when moving and on ground
         {
             rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
         }
-        else 
+        else if(!isGrounded) //when moving and in air
         {
-            rb.AddForce(moveDirection.normalized * moveSpeed * 15f * airMultiplier, ForceMode.Force);
+            rb.AddForce(moveDirection.normalized * moveSpeed * 15f * airMultiplier, ForceMode.Force);  
         }
-        //rb.useGravity = !OnSlope();
+        rb.useGravity = !OnSlope();   
     }
     private void SpeedControl() 
     {
-        Vector3 velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-
-        float maxSpeed = moveSpeed;
-        if (!isGrounded)
+        if (OnSlope() && !exitingSlope)
         {
-            maxSpeed = maxJumpSpeed; //variable maxJumpSpeed is used to change values in the inspector
+            if (rb.velocity.magnitude > moveSpeed)
+            {
+                rb.velocity = rb.velocity.normalized * moveSpeed;
+            }
         }
-
-        if(velocity.magnitude > maxSpeed)
+        else
         {
-            Vector3 limitVelocity = velocity.normalized * maxSpeed;
-            rb.velocity = new Vector3(limitVelocity.x, rb.velocity.y, limitVelocity.z);
+            Vector3 velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+
+            float maxSpeed = moveSpeed;
+
+            if (!isGrounded)
+            {
+                maxSpeed = maxJumpSpeed; //variable maxJumpSpeed is used to change values in the inspector
+            }
+
+            if (velocity.magnitude > maxSpeed)
+            {
+                Vector3 limitVelocity = velocity.normalized * maxSpeed;
+                rb.velocity = new Vector3(limitVelocity.x, rb.velocity.y, limitVelocity.z);
+            }
         }
     }
     private void Jump()
     {
-        //print("function called");
+        exitingSlope = true;
+        print(exitingSlope);
         rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
         Vector3 jumpDir = orientation.forward * verticalInput + orientation.right * horizontalInput + orientation.up; //getting the player's direction
         rb.AddForce(jumpDir * currentJumpForce, ForceMode.Impulse); 
@@ -176,38 +207,30 @@ public class FirstPersonPlayer : MonoBehaviour
         {
             rb.AddForce(Vector3.down * fallJumpGravity, ForceMode.Impulse);
         }
+    }
+    private void FastFall()
+    {
+        print("apply downward force");
 
+        rb.AddForce(Vector3.down * fastFallSpeed, ForceMode.Impulse);
     }
 
-    //private void GetDirection(Transform pressedDir)
-    //{
-    //    float horizontalInput = Input.GetAxisRaw("Horizontal");
-    //    float verticalInput = Input.GetAxisRaw("Vertical");
-
-    //    Vector3 direction = new Vector3();
-    //    direction = forwardT.forward * verticalInput + forwardT.right * horizontalInput;
-
-    //    if (verticalInput == 0 && horizontalInput == 0)
-    //    {
-    //        direction = forwardT.up;
-    //        return direction.normalized;
-    //    }
-       
-    //}
-    //private bool OnSlope() 
-    //{
-    //    //isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-    //    if (Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerHeight * 0.5f))
-    //    {
-    //        float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
-    //        return angle < maxSlopeAngle && angle != 0;
-    //    }
-    //    return false;
-    //}
-    //private Vector3 SlopeMoveDirection()
-    //{
-    //    print("currently on slope");
-    //    return Vector3.ProjectOnPlane(moveDirection, slopeHit.normal).normalized;
-    //}
+    private bool OnSlope()
+    {
+        if (Physics.Raycast(transform.position, Vector3.down, out slopeHit, 3f))
+        {
+            if (slopeHit.transform.gameObject.layer == LayerMask.NameToLayer("Ground"))
+            {
+                Debug.DrawRay(transform.position, Vector3.down, Color.green, 50f); //print("Hit");
+                float slopeAngle = Vector3.Angle(Vector3.up, slopeHit.normal);
+                return slopeAngle < maxSlopeAngle && slopeAngle != 0;
+            }
+        }
+        return false;
+    }
+    private Vector3 SlopeMoveDirection()
+    {
+        return Vector3.ProjectOnPlane(moveDirection, slopeHit.normal).normalized;
+    }
 }
  

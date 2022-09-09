@@ -16,6 +16,6 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         currentTime += 1 * Time.deltaTime;
-        print("time counts");
+        //print("time counts");
     }
 }
