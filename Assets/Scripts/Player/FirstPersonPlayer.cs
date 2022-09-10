@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class FirstPersonPlayer : MonoBehaviour
 {
+    public static FirstPersonPlayer instance;
     public MovementStates state;
     public enum MovementStates 
     {
@@ -59,9 +60,15 @@ public class FirstPersonPlayer : MonoBehaviour
     public bool exitingSlope;
 
     public int jumpGameCounter = 0;
+    public bool isDead = false;
+
+    private void Awake()
+    {
+        instance = this;
+        rb = GetComponent<Rigidbody>();
+    }
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
         currentJumpForce = defaultJumpForce;
         jumpChargeBar.value = currentJumpForce;
         jumpChargeBar.maxValue = maxJumpForce;
@@ -216,11 +223,6 @@ public class FirstPersonPlayer : MonoBehaviour
             }
         }
     }
-
-    private void ChargeJump()
-    {
-
-    }
     private void Jump()
     {
         exitingSlope = true;
@@ -261,5 +263,18 @@ public class FirstPersonPlayer : MonoBehaviour
     {
         return Vector3.ProjectOnPlane(moveDirection, slopeHit.normal).normalized;
     }
+ 
+    public void Dead()
+    {
+        isDead = true;
+    }
+    //private void OnCollisionEnter(Collision other)
+    //{
+    //    if (other.gameObject.CompareTag("DeadZone"))
+    //    {
+    //        print("Hit dead zone");
+    //        Dead();
+    //    }
+    //}
 }
  

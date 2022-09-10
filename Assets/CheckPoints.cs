@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class CheckPoints : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    //public DeadZone deadZone;
+    private void OnTriggerEnter(Collider other)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        if (other.gameObject.CompareTag("Player"))
+        {
+            print("oekkwoekwoe");
+            GameManager.instance.lastCheckPointPosition = transform.position;
+            Destroy(gameObject);
+        }
+       
     }
 }
