@@ -13,11 +13,10 @@ public class FirstPersonPlayer : MonoBehaviour
         air,
         fastfall,
         wallrunning
-
     }
 
     [Header("Movement")]
-    private float moveSpeed;
+    public float moveSpeed;
     public float walkSpeed;
     public float sprintSpeed;
     public float wallrunSpeed;
@@ -36,7 +35,7 @@ public class FirstPersonPlayer : MonoBehaviour
     public float defaultJumpForce;
     public float currentJumpForce;
     public float maxJumpForce;
-    public float maxJumpSpeed;
+    public float maxAirVelocity;
     public float airMultiplier;
     public float fallJumpGravity;
     public float fastFallSpeed;
@@ -133,14 +132,20 @@ public class FirstPersonPlayer : MonoBehaviour
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
 
-        if (Input.GetKey(KeyCode.Space) && isGrounded)
-        {
-            //print("detect jump input"); 
-            jumpChargeBar.value += increaseAmount * increasePercentage * Time.deltaTime;
-            currentJumpForce += increaseAmount * increasePercentage * Time.deltaTime;
-        }
+        //if (Input.GetKey(KeyCode.Space) && isGrounded)
+        //{
+        //    //print("detect jump input"); 
+        //    jumpChargeBar.value += increaseAmount * increasePercentage * Time.deltaTime;
+        //    currentJumpForce += increaseAmount * increasePercentage * Time.deltaTime;
+        //}
 
-        else if (Input.GetKey(KeyCode.Space) && !isGrounded) //allows for charging in air to continue chain jumps  (it sort of works)
+        //else if (Input.GetKey(KeyCode.Space) && !isGrounded) //allows for charging in air to continue chain jumps  (it sort of works)
+        //{
+        //    jumpChargeBar.value += increaseAmount * increasePercentage * Time.deltaTime;
+        //    currentJumpForce += increaseAmount * increasePercentage * Time.deltaTime;
+        //}
+
+        if (Input.GetKey(KeyCode.Space))
         {
             jumpChargeBar.value += increaseAmount * increasePercentage * Time.deltaTime;
             currentJumpForce += increaseAmount * increasePercentage * Time.deltaTime;
@@ -201,7 +206,7 @@ public class FirstPersonPlayer : MonoBehaviour
 
             if (!isGrounded)
             {
-                maxSpeed = maxJumpSpeed; //variable maxJumpSpeed is used to change values in the inspector
+                maxSpeed = maxAirVelocity; //variable maxJumpSpeed is used to change values in the inspector
             }
 
             if (velocity.magnitude > maxSpeed)
@@ -210,6 +215,11 @@ public class FirstPersonPlayer : MonoBehaviour
                 rb.velocity = new Vector3(limitVelocity.x, rb.velocity.y, limitVelocity.z);
             }
         }
+    }
+
+    private void ChargeJump()
+    {
+
     }
     private void Jump()
     {

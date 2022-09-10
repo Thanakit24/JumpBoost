@@ -11,11 +11,17 @@ public class BlurEnabler : MonoBehaviour
     public float minVel, maxVel, maxBlur;
     public Rigidbody rb;
     
+
     void Update()
     {
         var clampedSpeed = Mathf.Clamp(Mathf.Abs(rb.velocity.y), minVel, maxVel);
         var blurVal = KongrooUtils.RemapRange(clampedSpeed , minVel, maxVel, 0, maxBlur);
 
         blurMat.SetFloat("blurWidth",  blurVal);
+    }
+
+    private void OnDestroy()
+    {
+        blurMat.SetFloat("blurWidth", 0f);
     }
 }

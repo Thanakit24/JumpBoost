@@ -8,7 +8,7 @@ public class WallRunning : MonoBehaviour
     public LayerMask whatIsWall;
     public LayerMask whatIsGround;
     public float wallRunForce;
-    public float wallJumpForce;
+    public float wallJumpUpwardForce;
     public float wallJumpSideForce;
     public float wallClimbSpeed;
     //public float maxWallRunTime;
@@ -37,6 +37,7 @@ public class WallRunning : MonoBehaviour
 
     [Header("References")]
     public Transform orientation;
+    public PlayerCamera cam;
     private FirstPersonPlayer player;
     private Rigidbody rb;
 
@@ -53,7 +54,7 @@ public class WallRunning : MonoBehaviour
     }
 
     private void FixedUpdate()
-    { 
+    {
         if (player.wallRunning)
         {
             WallRunningMovement();
@@ -64,7 +65,7 @@ public class WallRunning : MonoBehaviour
         wallRight = Physics.Raycast(transform.position, orientation.right, out rightWall, wallCheckDistance, whatIsWall);
         //Debug.DrawRay(transform.position, orientation.right, Color.green, 100f); print("hit wall");
         wallLeft = Physics.Raycast(transform.position, -orientation.right, out leftWall, wallCheckDistance, whatIsWall);
-    } 
+    }
     private bool AboveGround()
     {
         return !Physics.Raycast(transform.position, Vector3.down, minJumpHeight, whatIsGround);
@@ -82,38 +83,49 @@ public class WallRunning : MonoBehaviour
         {
             if (!player.wallRunning)
             {
-                player.wallRunning = true;
+                StartWallRun();
             }
-               
-            if (Input.GetKeyDown(KeyCode.Space))
+
+            else
             {
-                WallJump();
+                if (Input.GetKeyUp(KeyCode.Space))
+                {
+                    WallJump();
+                }
             }
+
         }
         else if (exitingWall) //if leaving wall is true
         {
-            if (player.wallRunning) //stops running on wall
-            {
-                player.wallRunning = false;
-            }
-            if (exitWallTimer > 0) 
-            {
-                exitWallTimer -= Time.deltaTime;
-            }
+            exitWallTimer -= Time.deltaTime;
+            
             if (exitWallTimer <= 0)
             {
                 exitingWall = false;
             }
         }
-
         else
         {
             if (player.wallRunning)
                 player.wallRunning = false;
+                WallExit();
         }
     }
 
- 
+    private void StartWallRun()
+    {
+        player.wallRunning = true;
+        cam.DoFov(90f);
+
+        if (wallLeft)
+        {
+            cam.DoTilt(-5f);
+        }
+        if (wallRight)
+        {
+            cam.DoTilt(5f);
+        }
+    }
     private void WallRunningMovement()
     {
         //print("is wall running");
@@ -126,7 +138,7 @@ public class WallRunning : MonoBehaviour
         {
             wallForward = -wallForward;
         }
-        
+
         //forward force
         rb.AddForce(wallForward * wallRunForce, ForceMode.Force);
 
@@ -144,19 +156,29 @@ public class WallRunning : MonoBehaviour
         {
             rb.AddForce(-wallNormal * 100, ForceMode.Force);
         }
-       
+
     }
-
-
+    private void WallExit()
+    {
+        cam.DoFov(80f);
+        cam.DoTilt(0f);
+    }
     private void WallJump()
     {
         exitingWall = true;
         exitWallTimer = exitWallTime;
         print("wall jumping");
         Vector3 wallNormal = wallRight ? rightWall.normal : leftWall.normal;
-        Vector3 forceToApply = transform.up * wallJumpForce + wallNormal * wallJumpSideForce;
+        Vector3 forceToApply = transform.up * wallJumpUpwardForce + wallNormal * player.currentJumpForce;
+        //Vector3 forceToApply = transform.up * player.currentJumpForce + wallNormal * wallJumpSideForce;
 
         rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
         rb.AddForce(forceToApply, ForceMode.Impulse);
+        player.jumpChargeBar.value = 0f;
+        player.currentJumpForce = 0f;
+        player.wallRunning = false;
+
+        cam.DoFov(80f);
+        cam.DoTilt(0f);
     }
-} 
+}
