@@ -11,14 +11,19 @@ public class FirstPersonPlayer : MonoBehaviour
         walking,
         sprinting,
         air,
-        fastFall
+        fastfall,
+        wallrunning
+
     }
 
     [Header("Movement")]
     private float moveSpeed;
     public float walkSpeed;
     public float sprintSpeed;
+    public float wallrunSpeed;
     public Transform orientation;
+
+    public bool wallRunning;
 
     float horizontalInput;
     float verticalInput;
@@ -54,10 +59,12 @@ public class FirstPersonPlayer : MonoBehaviour
     private RaycastHit slopeHit;
     public bool exitingSlope;
 
+    public int jumpGameCounter = 0;
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         currentJumpForce = defaultJumpForce;
+        jumpChargeBar.value = currentJumpForce;
         jumpChargeBar.maxValue = maxJumpForce;
         jumpChargeBar.value = 0;
 
@@ -84,6 +91,13 @@ public class FirstPersonPlayer : MonoBehaviour
         lastGrounded = isGrounded;
         ProcessInputs();
         StateHandler();
+
+        if (currentJumpForce >= maxJumpForce)
+        {
+            //print("Set back to maxjumpforce");
+            currentJumpForce = maxJumpForce;
+        }
+      
         SpeedControl();
     }
 
@@ -94,6 +108,11 @@ public class FirstPersonPlayer : MonoBehaviour
 
     private void StateHandler()
     {
+        if (wallRunning)
+        {
+            state = MovementStates.wallrunning;
+            moveSpeed = wallrunSpeed;
+        }
         if (isGrounded && Input.GetKey(KeyCode.LeftShift))
         {
             state = MovementStates.sprinting;
@@ -104,7 +123,7 @@ public class FirstPersonPlayer : MonoBehaviour
             state = MovementStates.walking;
             moveSpeed = walkSpeed;
         }
-        else
+        else if (!wallRunning) 
         {
             state = MovementStates.air;
         }
@@ -130,15 +149,15 @@ public class FirstPersonPlayer : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.Space) && isGrounded)
         {
             Jump();
-          
+            jumpGameCounter++;
             currentJumpForce = defaultJumpForce;
             jumpChargeBar.value = 0;
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftControl) && state == MovementStates.air)
+        if (Input.GetKeyDown(KeyCode.LeftControl) && state == MovementStates.air && !wallRunning)
         {
-            state = MovementStates.fastFall;
-            print("checks H input");
+            state = MovementStates.fastfall;
+            //print("checks H input");
             FastFall();
         }
     }
@@ -195,7 +214,7 @@ public class FirstPersonPlayer : MonoBehaviour
     private void Jump()
     {
         exitingSlope = true;
-        print(exitingSlope);
+        //print(exitingSlope);
         rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
         Vector3 jumpDir = orientation.forward * verticalInput + orientation.right * horizontalInput + orientation.up; //getting the player's direction
         rb.AddForce(jumpDir * currentJumpForce, ForceMode.Impulse); 
@@ -210,7 +229,7 @@ public class FirstPersonPlayer : MonoBehaviour
     }
     private void FastFall()
     {
-        print("apply downward force");
+        //print("apply downward force");
 
         rb.AddForce(Vector3.down * fastFallSpeed, ForceMode.Impulse);
     }
@@ -221,7 +240,7 @@ public class FirstPersonPlayer : MonoBehaviour
         {
             if (slopeHit.transform.gameObject.layer == LayerMask.NameToLayer("Ground"))
             {
-                Debug.DrawRay(transform.position, Vector3.down, Color.green, 50f); //print("Hit");
+                //Debug.DrawRay(transform.position, Vector3.down, Color.green, 50f); //print("Hit");
                 float slopeAngle = Vector3.Angle(Vector3.up, slopeHit.normal);
                 return slopeAngle < maxSlopeAngle && slopeAngle != 0;
             }
