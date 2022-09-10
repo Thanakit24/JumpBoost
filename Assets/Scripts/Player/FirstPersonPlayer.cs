@@ -234,7 +234,7 @@ public class FirstPersonPlayer : MonoBehaviour
 
     private void JumpFall()
     {
-        if (rb.velocity.y <= 0.5)
+        if (rb.velocity.y <= 0)
         {
             rb.AddForce(Vector3.down * fallJumpGravity, ForceMode.Impulse);
         }
