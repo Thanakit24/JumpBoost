@@ -50,6 +50,7 @@ public class FirstPersonPlayer : MonoBehaviour
     public LayerMask groundMask;
     public float groundDistance;
     public float groundDrag;
+    public float airDrag;
     public Transform groundCheck;
     [SerializeField] private bool isGrounded;
     private bool lastGrounded = true;
@@ -90,7 +91,7 @@ public class FirstPersonPlayer : MonoBehaviour
         }
         else
         {
-            rb.drag = 0;
+            rb.drag = airDrag;
             JumpFall();
         }
 

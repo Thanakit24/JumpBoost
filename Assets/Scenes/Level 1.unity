@@ -37235,14 +37235,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 3158627178068288352, guid: 0cb875d447ba2024bb1614c7afa076e4, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -7.476412
-      objectReference: {fileID: 0}
-    - target: {fileID: 3158627178068288352, guid: 0cb875d447ba2024bb1614c7afa076e4, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0.51310843
-      objectReference: {fileID: 0}
     - target: {fileID: 3158627178115941064, guid: 0cb875d447ba2024bb1614c7afa076e4, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -37465,6 +37457,10 @@ PrefabInstance:
       propertyPath: jumpChargeBar
       value: 
       objectReference: {fileID: 38898181}
+    - target: {fileID: 5438986428506391090, guid: 6d60711c532bbe34a9563e46c83fac89, type: 3}
+      propertyPath: maxAirVelocity
+      value: 27.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6d60711c532bbe34a9563e46c83fac89, type: 3}
 --- !u!1001 &6689019166771001473
