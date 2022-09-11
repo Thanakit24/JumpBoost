@@ -166,6 +166,7 @@ public class WallRunning : MonoBehaviour
     private void WallJump()
     {
         exitingWall = true;
+        player.jumpGameCounter++;
         exitWallTimer = exitWallTime;
         print("wall jumping");
         Vector3 wallNormal = wallRight ? rightWall.normal : leftWall.normal;

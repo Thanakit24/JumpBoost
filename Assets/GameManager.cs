@@ -15,8 +15,14 @@ public class GameManager : MonoBehaviour
 
     public TMP_Text timeDisplay;
     public TMP_Text jumpCounterDisplay;
+    public TMP_Text timeFinalDisplay;
+    public TMP_Text jumpFinalCounterDisplay;
     public int jumpCounter;
-    [SerializeField] private bool levelFinish = false;
+    public bool levelFinish = false;
+
+    public GameObject levelFinishUI;
+    public GameObject inGameUI;
+    public GameObject playerUI; 
 
     public Vector3 lastCheckPointPosition;
     //public FirstPersonPlayer player;
@@ -27,22 +33,21 @@ public class GameManager : MonoBehaviour
         {
             instance = this;
         }
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        DontDestroyOnLoad(gameObject);
-        
-
+        //else
+        //{
+        //    Destroy(gameObject);
+        //    return;
+        //}
+        //DontDestroyOnLoad(gameObject);
     }
     // Start is called before the first frame update
     void Start()
     {
-        
+        jumpCounter = 0;
+        levelFinishUI.SetActive(false);
+        inGameUI.SetActive(true);
+        playerUI.SetActive(true);
         currentTime = startTime;
-
     }
 
     // Update is called once per frame
@@ -54,16 +59,16 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            finishTime = currentTime;
+            CompleteLevel();
         }
 
         TimeSpan time = TimeSpan.FromSeconds(currentTime);
         timeDisplay.text = time.ToString(@"mm\:ss\:ff");
 
         jumpCounter = FirstPersonPlayer.instance.jumpGameCounter;
-
-        jumpCounterDisplay.text = jumpCounter.ToString("JUMPS: " + jumpCounter);
-            //time.Seconds.ToString() + ":" + time.Milliseconds.ToString();
+        jumpCounterDisplay.text = $"JUMP: {jumpCounter}";
+       
+        //time.Seconds.ToString() + ":" + time.Milliseconds.ToString();
         //print(currentTime);
         //print("time counts");
 
@@ -72,8 +77,33 @@ public class GameManager : MonoBehaviour
             ReloadScene();
         }
     }
-    void ReloadScene()
+    public void ReloadScene()
     {
+        //levelFinish = false;
+        //levelFinishUI.SetActive(false);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+    private void CompleteLevel()
+    {
+        //print("player won");
+        finishTime = currentTime;
+
+        inGameUI.SetActive(false);
+        playerUI.SetActive(false);
+
+        Time.timeScale = 0f;
+        jumpFinalCounterDisplay.text = $" {jumpCounter}";
+        timeFinalDisplay.text = timeDisplay.text; 
+        levelFinishUI.SetActive(true);
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+    }
+
+    public void LoadNextLevel()
+    {
+        print("load next lvl");
+        //levelFinish = false;
+        //levelFinishUI.SetActive(false);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 }

@@ -32,6 +32,8 @@ public class DeadZone : MonoBehaviour
             print("Hit dead zone");
             //FirstPersonPlayer.instance.isDead = true;
             FirstPersonPlayer.instance.gameObject.transform.position = GameManager.instance.lastCheckPointPosition;
+            FirstPersonPlayer.instance.jumpChargeBar.value = 0;
+            FirstPersonPlayer.instance.currentJumpForce = FirstPersonPlayer.instance.defaultJumpForce;
         }
     }
 }

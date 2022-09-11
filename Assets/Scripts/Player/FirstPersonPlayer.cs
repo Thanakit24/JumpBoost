@@ -71,6 +71,7 @@ public class FirstPersonPlayer : MonoBehaviour
     void Start()
     {
         currentJumpForce = defaultJumpForce;
+        jumpGameCounter = 0;
         jumpChargeBar.value = currentJumpForce;
         jumpChargeBar.maxValue = maxJumpForce;
         jumpChargeBar.value = 0;
